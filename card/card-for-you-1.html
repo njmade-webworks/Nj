@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday!</title>
+    <title>Happy Birthday</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Cormorant+Garamond:wght@300;400;500;600&display=swap');
 
         * {
             margin: 0;
@@ -14,217 +14,373 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Cormorant Garamond', serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow-x: hidden;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ENVELOPE STYLES */
+        .envelope-wrapper {
+            position: relative;
+            width: 400px;
+            height: 300px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .envelope-wrapper:hover {
+            transform: scale(1.02);
+        }
+
+        .envelope {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f8f4f0 0%, #e8e0d8 100%);
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(135deg, #f0e6dc 0%, #e0d4c8 100%);
+            clip-path: polygon(0 0, 50% 100%, 100% 0);
+            z-index: 10;
+            transition: transform 0.6s ease;
+            transform-origin: top;
+        }
+
+        .envelope-body {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f8f4f0 0%, #e8e0d8 100%);
+            border-radius: 0 0 8px 8px;
+        }
+
+        .envelope-pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(135deg, #f0e6dc 0%, #e0d4c8 100%);
+            clip-path: polygon(0 100%, 50% 0, 100% 100%);
+            z-index: 5;
+        }
+
+        /* WAX SEAL */
+        .wax-seal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%);
+            border-radius: 50%;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), inset 0 -4px 10px rgba(0, 0, 0, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .wax-seal::before {
+            content: 'Nj';
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .wax-seal:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .tap-hint {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 16px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: pulse 2s ease-in-out infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* CARD INSIDE */
+        .card {
+            position: absolute;
+            width: 360px;
+            height: 260px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            transform: translateY(-20px);
+            transition: all 0.8s ease;
+            overflow: hidden;
+        }
+
+        .card-front {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            left: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px 0 0 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-origin: right;
+            transition: transform 1s ease;
+            z-index: 10;
+        }
+
+        .card-front::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .card-front-content {
+            text-align: center;
+            color: white;
             padding: 20px;
         }
 
-        .card {
-            background: white;
-            border-radius: 24px;
-            max-width: 500px;
-            width: 100%;
-            padding: 60px 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            animation: cardEntry 1s ease-out;
-        }
-
-        @keyframes cardEntry {
-            from {
-                opacity: 0;
-                transform: translateY(50px) scale(0.9);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .emoji {
-            font-size: 80px;
-            margin-bottom: 20px;
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        h1 {
+        .card-front h2 {
             font-family: 'Playfair Display', serif;
-            font-size: 48px;
-            color: #1e293b;
+            font-size: 28px;
+            font-weight: 600;
             margin-bottom: 10px;
-            animation: fadeIn 1.5s ease-out 0.3s both;
-        }
-
-        .name {
-            font-family: 'Playfair Display', serif;
-            font-size: 36px;
             font-style: italic;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 30px;
-            animation: fadeIn 1.5s ease-out 0.6s both;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .card-back {
+            position: absolute;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, #f5f0eb 0%, #e8e0d8 100%);
+            border-radius: 0 8px 8px 0;
+            padding: 30px 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        .message {
-            font-size: 18px;
-            color: #64748b;
-            line-height: 1.8;
-            margin-bottom: 40px;
-            animation: fadeIn 1.5s ease-out 0.9s both;
+        .card-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.1;
         }
 
-        .details {
-            background: #f8fafc;
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 30px;
-            animation: fadeIn 1.5s ease-out 1.2s both;
+        .card-content {
+            position: relative;
+            z-index: 5;
         }
 
-        .detail-item {
-            margin-bottom: 20px;
+        .card-content h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-weight: 600;
         }
 
-        .detail-item:last-child {
-            margin-bottom: 0;
+        .card-content p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #4a4a4a;
+            margin-bottom: 10px;
         }
 
-        .detail-label {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #94a3b8;
-            margin-bottom: 5px;
+        .card-content .name {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: #764ba2;
+            font-style: italic;
+            margin: 15px 0;
         }
 
-        .detail-value {
-            font-size: 20px;
-            color: #1e293b;
-            font-weight: 500;
+        /* OPEN STATE */
+        .envelope-wrapper.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
         }
 
+        .envelope-wrapper.open .wax-seal {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+            pointer-events: none;
+        }
+
+        .envelope-wrapper.open .card {
+            transform: translateY(-150px) scale(1.1);
+            z-index: 15;
+        }
+
+        .envelope-wrapper.open .card-front {
+            transform: rotateY(-180deg);
+        }
+
+        /* CONFETTI */
         .confetti {
             position: fixed;
             width: 10px;
             height: 10px;
-            background: #f43f5e;
-            animation: fall 3s linear infinite;
+            opacity: 0;
         }
 
-        @keyframes fall {
-            to {
-                transform: translateY(100vh) rotate(360deg);
+        .confetti.active {
+            animation: confetti-fall 3s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                opacity: 1;
+                transform: translateY(-100vh) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(720deg);
             }
         }
 
-        .confetti:nth-child(1) { left: 10%; animation-delay: 0s; background: #667eea; }
-        .confetti:nth-child(2) { left: 20%; animation-delay: 0.5s; background: #f43f5e; }
-        .confetti:nth-child(3) { left: 30%; animation-delay: 1s; background: #764ba2; }
-        .confetti:nth-child(4) { left: 40%; animation-delay: 1.5s; background: #fbbf24; }
-        .confetti:nth-child(5) { left: 50%; animation-delay: 2s; background: #10b981; }
-        .confetti:nth-child(6) { left: 60%; animation-delay: 0.3s; background: #667eea; }
-        .confetti:nth-child(7) { left: 70%; animation-delay: 0.8s; background: #f43f5e; }
-        .confetti:nth-child(8) { left: 80%; animation-delay: 1.3s; background: #764ba2; }
-        .confetti:nth-child(9) { left: 90%; animation-delay: 1.8s; background: #fbbf24; }
-
-        .footer {
-            font-size: 14px;
-            color: #94a3b8;
-            margin-top: 30px;
-            animation: fadeIn 1.5s ease-out 1.5s both;
-        }
-
-        .footer a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
+        /* DECORATIVE ELEMENTS */
+        .decorative-border {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 4px;
+            pointer-events: none;
         }
 
         @media (max-width: 600px) {
+            .envelope-wrapper {
+                width: 320px;
+                height: 240px;
+            }
             .card {
-                padding: 40px 30px;
+                width: 290px;
+                height: 210px;
             }
-            h1 {
-                font-size: 36px;
-            }
-            .name {
-                font-size: 28px;
-            }
-            .emoji {
-                font-size: 60px;
+            .wax-seal {
+                width: 60px;
+                height: 60px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Confetti Animation -->
-    <div class="confetti"></div>
-    <div class="confetti"></div>
-    <div class="confetti"></div>
-    <div class="confetti"></div>
-    <div class="confetti"></div>
-    <div class="confetti"></div>
-    <div class="confetti"></div>
-    <div class="confetti"></div>
-    <div class="confetti"></div>
-
-    <div class="card">
-        <div class="emoji">🎂</div>
-        <h1>Happy Birthday</h1>
-        <!-- CHANGE THIS: Client's Name -->
-        <div class="name">Sarah</div>
-        
-        <p class="message">
-            Wishing you a day filled with love, laughter, and all the joy your heart can hold. 
-            May this year bring you endless blessings and beautiful memories.
-        </p>
-
-        <div class="details">
-            <!-- CHANGE THIS: Event Details -->
-            <div class="detail-item">
-                <div class="detail-label">Date</div>
-                <div class="detail-value">Saturday, October 24, 2024</div>
+    <div class="container">
+        <!-- Envelope -->
+        <div class="envelope-wrapper" id="envelope" onclick="openCard()">
+            <div class="envelope">
+                <div class="envelope-flap"></div>
+                <div class="envelope-body">
+                    <div class="envelope-pocket"></div>
+                </div>
+                <div class="wax-seal"></div>
             </div>
-            <div class="detail-item">
-                <div class="detail-label">Time</div>
-                <div class="detail-value">7:00 PM</div>
-            </div>
-            <div class="detail-item">
-                <div class="detail-label">Location</div>
-                <div class="detail-value">The Garden Restaurant</div>
-            </div>
+            <div class="tap-hint">Tap the seal to open</div>
         </div>
 
-        <div class="footer">
-            Made with love by <a href="https://instagram.com/njmade_official" target="_blank">Nj Made</a>
+        <!-- Card Inside -->
+        <div class="card">
+            <div class="card-front">
+                <div class="decorative-border"></div>
+                <div class="card-front-content">
+                    <h2>Happy<br>Birthday</h2>
+                    <p style="font-size: 14px; opacity: 0.9;">A special day for a special person</p>
+                </div>
+            </div>
+            <div class="card-back">
+                <img src="https://images.unsplash.com/photo-1530103862676-de3c9a59aa38?auto=format&fit=crop&q=80&w=400" 
+                     alt="Birthday decoration" 
+                     class="card-image">
+                <div class="card-content">
+                    <h3>Happy Birthday</h3>
+                    <div class="name">Sarah</div>
+                    <p>Wishing you a day filled with love, laughter, and all the joy your heart can hold.</p>
+                    <p style="margin-top: 15px; font-style: italic; color: #667eea;">May this year bring you endless blessings</p>
+                </div>
+            </div>
         </div>
     </div>
+
+    <script>
+        function openCard() {
+            const envelope = document.getElementById('envelope');
+            
+            if (!envelope.classList.contains('open')) {
+                envelope.classList.add('open');
+                createConfetti();
+            }
+        }
+
+        function createConfetti() {
+            const colors = ['#667eea', '#764ba2', '#f093fb', '#f43f5e', '#fbbf24'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti active';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 4000);
+                }, i * 30);
+            }
+        }
+    </script>
 </body>
 </html>
