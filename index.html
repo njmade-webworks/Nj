@@ -3,285 +3,717 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nj Made | Bespoke Digital Invitations</title>
+    <title>Nj Made | Digital Greeting Cards</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0c0a09;
-            color: #fafaf9;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
         }
-        
-        h1, h2, h3, .serif {
-            font-family: 'Playfair Display', serif;
+
+        h1, h2, h3, .display { font-family: 'Space Grotesk', sans-serif; }
+
+        .masonry-grid { column-count: 1; column-gap: 1.5rem; }
+        @media (min-width: 768px) { .masonry-grid { column-count: 2; } }
+        @media (min-width: 1024px) { .masonry-grid { column-count: 3; } }
+        @media (min-width: 1280px) { .masonry-grid { column-count: 4; } }
+
+        .masonry-item { break-inside: avoid; margin-bottom: 1.5rem; transition: all 0.3s ease; }
+
+        .card-preview {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
-        .preview-card {
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
+        .card-preview:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(255, 255, 255, 0.1);
         }
-        
-        .preview-card:hover {
-            transform: translateY(-4px);
+
+        .card-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.6s ease;
         }
-        
-        .preview-card:hover .preview-image {
-            transform: scale(1.05);
-            opacity: 1;
+
+        .card-preview:hover img { transform: scale(1.05); }
+
+        .card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.5rem;
         }
-        
-        .preview-image {
-            transition: all 0.8s ease-out;
-            opacity: 0.85;
+
+        .card-preview:hover .card-overlay { opacity: 1; }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            overflow-y: auto;
+            padding: 2rem 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .modal-content {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            background: #111;
+            border-radius: 1.5rem;
+            border: 1px solid #222;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
+        }
+
+        .animated-bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 119, 198, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .float { animation: float 6s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(102, 126, 234, 0.5);
+        }
+
+        .category-pill {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .category-pill:hover, .category-pill.active {
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .preview-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .preview-placeholder .card-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
         }
     </style>
 </head>
-<body class="antialiased selection:bg-stone-700 selection:text-white">
+<body>
+
+    <div class="animated-bg"></div>
 
     <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 bg-stone-950/80 backdrop-blur-md border-b border-stone-800/50">
-        <div class="max-w-7xl mx-auto px-6 py-5 flex justify-between items-center">
-            <div class="text-2xl font-semibold tracking-wide serif">Nj Made</div>
-            <div class="hidden md:flex space-x-10">
-                <a href="#portfolio" class="text-sm text-stone-400 hover:text-stone-100 transition duration-300">Portfolio</a>
-                <a href="#process" class="text-sm text-stone-400 hover:text-stone-100 transition duration-300">Process</a>
-                <a href="#pricing" class="text-sm text-stone-400 hover:text-stone-100 transition duration-300">Pricing</a>
+    <nav class="fixed top-0 w-full z-50 bg-black/50 backdrop-blur-xl border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold display tracking-tight">Nj <span class="gradient-text">Made</span></div>
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#gallery" class="text-sm text-gray-400 hover:text-white transition">Gallery</a>
+                <a href="#categories" class="text-sm text-gray-400 hover:text-white transition">Categories</a>
+                <a href="#pricing" class="text-sm text-gray-400 hover:text-white transition">Pricing</a>
             </div>
-            <!-- REPLACE: Change 'yourhandle' to your actual Instagram username -->
-            <a href="https://instagram.com/yourhandle" target="_blank" class="text-sm font-medium text-stone-100 border border-stone-700 px-5 py-2.5 rounded-full hover:bg-stone-100 hover:text-stone-950 transition duration-300">
-                Inquire Now
+            <a href="https://instagram.com/njmade_official" target="_blank" class="btn-primary px-6 py-2.5 rounded-full text-sm font-semibold">
+                Order Now
             </a>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative min-h-screen flex items-center justify-center pt-20">
-        <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_rgba(214,211,209,0.08),transparent_60%)]"></div>
-        <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
-            <p class="text-stone-400 text-sm tracking-[0.2em] uppercase mb-6">Bespoke Digital Experiences</p>
-            <h1 class="text-5xl md:text-7xl lg:text-8xl font-medium leading-[1.1] mb-8">
-                Elevate Your <br>
-                <span class="italic text-stone-300">Celebrations</span>
+    <section class="min-h-screen flex items-center justify-center pt-20 px-6">
+        <div class="max-w-5xl mx-auto text-center">
+            <div class="float mb-8">
+                <span class="inline-block px-6 py-3 rounded-full bg-white/5 border border-white/10 text-sm text-gray-300 backdrop-blur-sm">
+                    Digital Greeting Cards Reimagined
+                </span>
+            </div>
+            <h1 class="text-6xl md:text-8xl lg:text-9xl font-bold mb-8 leading-none display">
+                Make Them<br>
+                <span class="gradient-text italic">Feel Special</span>
             </h1>
-            <p class="text-lg md:text-xl text-stone-400 max-w-2xl mx-auto mb-12 font-light leading-relaxed">
-                Premium, animated digital invitations crafted for life's most meaningful moments. 
-                Seamlessly blending elegant design with modern convenience.
+            <p class="text-xl md:text-2xl text-gray-400 mb-12 max-w-2xl mx-auto font-light">
+                Animated, interactive digital cards that bring your celebrations to life.
+                No paper. No limits. Just pure creativity.
             </p>
-            <div class="flex flex-col sm:flex-row gap-5 justify-center">
-                <a href="#portfolio" class="bg-stone-100 text-stone-950 px-8 py-4 rounded-full font-medium hover:bg-white transition duration-300">
-                    View Templates
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#gallery" class="btn-primary px-10 py-5 rounded-full font-semibold text-lg inline-flex items-center justify-center gap-2">
+                    Explore Cards <i data-lucide="arrow-down" class="w-5 h-5"></i>
                 </a>
-                <a href="#process" class="px-8 py-4 rounded-full font-medium border border-stone-700 text-stone-300 hover:border-stone-500 hover:text-white transition duration-300">
-                    How It Works
+                <a href="#how-it-works" class="px-10 py-5 rounded-full font-semibold text-lg border border-white/20 hover:bg-white/5 transition inline-flex items-center justify-center gap-2">
+                    How It Works <i data-lucide="play" class="w-5 h-5"></i>
                 </a>
+            </div>
+
+            <div class="mt-20 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
+                <div class="text-center">
+                    <div class="text-4xl md:text-5xl font-bold gradient-text mb-2">50+</div>
+                    <div class="text-sm text-gray-500">Unique Designs</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl md:text-5xl font-bold gradient-text mb-2">24h</div>
+                    <div class="text-sm text-gray-500">Fast Delivery</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl md:text-5xl font-bold gradient-text mb-2">100%</div>
+                    <div class="text-sm text-gray-500">Customizable</div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Portfolio / Preview Section -->
-    <section id="portfolio" class="py-32 bg-stone-950">
+    <!-- Categories Filter -->
+    <section id="categories" class="py-20 sticky top-16 z-40 bg-black/80 backdrop-blur-xl border-y border-white/5">
         <div class="max-w-7xl mx-auto px-6">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-16">
-                <div>
-                    <h2 class="text-4xl md:text-5xl font-medium mb-4">Curated Templates</h2>
-                    <p class="text-stone-400 max-w-md font-light">Explore our collection of pre-designed animated layouts. Each can be fully customized to match your event's specific details and color palette.</p>
-                </div>
-                <!-- REPLACE: Change 'yourhandle' to your actual Instagram username -->
-                <a href="https://instagram.com/yourhandle" class="hidden md:flex items-center gap-2 text-stone-300 hover:text-white transition mt-6 md:mt-0">
-                    View more on Instagram <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </a>
-            </div>
-
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                
-                <!-- Preview 1: Wedding -->
-                <div class="preview-card group cursor-pointer">
-                    <div class="relative overflow-hidden rounded-lg border border-stone-800 bg-stone-900 aspect-[4/5]">
-                        <!-- REPLACE: Upload your template image to GitHub and paste the URL here -->
-                        <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=800" 
-                             alt="Elegant Wedding Invitation Preview" 
-                             class="preview-image w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/20 to-transparent opacity-80"></div>
-                        <div class="absolute bottom-0 left-0 p-8">
-                            <p class="text-xs tracking-widest uppercase text-stone-400 mb-2">Wedding</p>
-                            <h3 class="text-2xl serif text-white">The Classic Minimalist</h3>
-                            <p class="text-stone-400 text-sm mt-2 font-light">Subtle fade animations with refined typography.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Preview 2: Birthday -->
-                <div class="preview-card group cursor-pointer">
-                    <div class="relative overflow-hidden rounded-lg border border-stone-800 bg-stone-900 aspect-[4/5]">
-                        <!-- REPLACE: Upload your template image to GitHub and paste the URL here -->
-                        <img src="https://images.unsplash.com/photo-1530103862676-de3c9a59aa38?auto=format&fit=crop&q=80&w=800" 
-                             alt="Modern Birthday Invitation Preview" 
-                             class="preview-image w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/20 to-transparent opacity-80"></div>
-                        <div class="absolute bottom-0 left-0 p-8">
-                            <p class="text-xs tracking-widest uppercase text-stone-400 mb-2">Milestone Birthday</p>
-                            <h3 class="text-2xl serif text-white">The Modern Gala</h3>
-                            <p class="text-stone-400 text-sm mt-2 font-light">Dynamic transitions with a sophisticated dark theme.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Preview 3: Corporate / General -->
-                <div class="preview-card group cursor-pointer">
-                    <div class="relative overflow-hidden rounded-lg border border-stone-800 bg-stone-900 aspect-[4/5]">
-                        <!-- REPLACE: Upload your template image to GitHub and paste the URL here -->
-                        <img src="https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&q=80&w=800" 
-                             alt="Corporate Event Invitation Preview" 
-                             class="preview-image w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/20 to-transparent opacity-80"></div>
-                        <div class="absolute bottom-0 left-0 p-8">
-                            <p class="text-xs tracking-widest uppercase text-stone-400 mb-2">Corporate & Events</p>
-                            <h3 class="text-2xl serif text-white">The Executive</h3>
-                            <p class="text-stone-400 text-sm mt-2 font-light">Clean lines, professional tone, and RSVP integration.</p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            
-            <div class="mt-12 text-center md:hidden">
-                <!-- REPLACE: Change 'yourhandle' to your actual Instagram username -->
-                <a href="https://instagram.com/yourhandle" class="inline-flex items-center gap-2 text-stone-300 hover:text-white transition">
-                    View more on Instagram <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </a>
+            <div class="flex flex-wrap gap-3 justify-center">
+                <button class="category-pill active px-6 py-2.5 rounded-full text-sm font-medium" data-filter="all">All Cards</button>
+                <button class="category-pill px-6 py-2.5 rounded-full text-sm font-medium" data-filter="birthday">Birthdays</button>
+                <button class="category-pill px-6 py-2.5 rounded-full text-sm font-medium" data-filter="holiday">Holidays</button>
+                <button class="category-pill px-6 py-2.5 rounded-full text-sm font-medium" data-filter="love">Love & Romance</button>
+                <button class="category-pill px-6 py-2.5 rounded-full text-sm font-medium" data-filter="thankyou">Thank You</button>
+                <button class="category-pill px-6 py-2.5 rounded-full text-sm font-medium" data-filter="custom">Custom</button>
             </div>
         </div>
     </section>
 
-    <!-- Process Section -->
-    <section id="process" class="py-32 bg-stone-900/30 border-y border-stone-800/50">
-        <div class="max-w-7xl mx-auto px-6">
+    <!-- Gallery - Masonry Grid -->
+    <section id="gallery" class="py-20 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="mb-12">
+                <h2 class="text-4xl md:text-6xl font-bold mb-4 display">Creative Collection</h2>
+                <p class="text-gray-400 text-lg">Click any card to preview the full experience</p>
+            </div>
+
+            <div class="masonry-grid" id="cardGrid">
+
+                <!-- Card 1 -->
+                <div class="masonry-item" data-category="birthday">
+                    <div class="card-preview" onclick="openModal('modal1')">
+                        <img src="https://images.unsplash.com/photo-1530103862676-de3c9a59aa38?auto=format&fit=crop&q=80&w=600" alt="Birthday Card" class="w-full">
+                        <div class="card-overlay">
+                            <h3 class="text-xl font-bold mb-1">Golden Birthday</h3>
+                            <p class="text-sm text-gray-300">Click to preview</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="masonry-item" data-category="holiday">
+                    <div class="card-preview" onclick="openModal('modal2')">
+                        <img src="https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&q=80&w=600" alt="Holiday Card" class="w-full">
+                        <div class="card-overlay">
+                            <h3 class="text-xl font-bold mb-1">Christmas Magic</h3>
+                            <p class="text-sm text-gray-300">Click to preview</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="masonry-item" data-category="love">
+                    <div class="card-preview" onclick="openModal('modal3')">
+                        <img src="https://images.unsplash.com/photo-1518199266791-5375a83cf983?auto=format&fit=crop&q=80&w=600" alt="Love Card" class="w-full">
+                        <div class="card-overlay">
+                            <h3 class="text-xl font-bold mb-1">Valentine's Day</h3>
+                            <p class="text-sm text-gray-300">Click to preview</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="masonry-item" data-category="thankyou">
+                    <div class="card-preview" onclick="openModal('modal4')">
+                        <img src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&q=80&w=600" alt="Thank You Card" class="w-full">
+                        <div class="card-overlay">
+                            <h3 class="text-xl font-bold mb-1">Elegant Thanks</h3>
+                            <p class="text-sm text-gray-300">Click to preview</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="masonry-item" data-category="birthday">
+                    <div class="card-preview" onclick="openModal('modal5')">
+                        <img src="https://images.unsplash.com/photo-1527529482837-46980889131a?auto=format&fit=crop&q=80&w=600" alt="Birthday Card" class="w-full">
+                        <div class="card-overlay">
+                            <h3 class="text-xl font-bold mb-1">Party Vibes</h3>
+                            <p class="text-sm text-gray-300">Click to preview</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="masonry-item" data-category="custom">
+                    <div class="card-preview" onclick="openModal('modal6')">
+                        <img src="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&q=80&w=600" alt="Custom Card" class="w-full">
+                        <div class="card-overlay">
+                            <h3 class="text-xl font-bold mb-1">Fully Custom</h3>
+                            <p class="text-sm text-gray-300">Click to preview</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal 1: Birthday -->
+    <div id="modal1" class="modal" onclick="closeModal(event, 'modal1')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal(event, 'modal1')">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="p-8 md:p-12">
+                <div class="aspect-[4/5] md:aspect-auto md:h-[600px] bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-2xl mb-8">
+                    <div class="preview-placeholder">
+                        <div class="card-icon bg-white/10 backdrop-blur-sm">
+                            <i data-lucide="cake" class="w-10 h-10 text-purple-300"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-2 display">Golden Birthday</h3>
+                        <p class="text-gray-300 mb-8">Animated birthday greeting card template</p>
+                        <div class="bg-white/10 rounded-xl p-6 backdrop-blur-sm w-full max-w-sm">
+                            <p class="text-sm text-gray-300 mb-3 font-medium">Features</p>
+                            <ul class="text-sm text-gray-400 space-y-3 text-left">
+                                <li class="flex items-center gap-3"><i data-lucide="wand-2" class="w-4 h-4 text-purple-400 shrink-0"></i>Smooth scroll animations</li>
+                                <li class="flex items-center gap-3"><i data-lucide="music" class="w-4 h-4 text-purple-400 shrink-0"></i>Background music option</li>
+                                <li class="flex items-center gap-3"><i data-lucide="smartphone" class="w-4 h-4 text-purple-400 shrink-0"></i>Mobile-optimized design</li>
+                                <li class="flex items-center gap-3"><i data-lucide="palette" class="w-4 h-4 text-purple-400 shrink-0"></i>Fully customizable colors</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="https://instagram.com/njmade_official" target="_blank" class="btn-primary px-8 py-4 rounded-full font-semibold text-center flex-1">
+                        Order This Design - $35
+                    </a>
+                    <button onclick="closeModal(event, 'modal1')" class="px-8 py-4 rounded-full font-semibold border border-white/20 hover:bg-white/5 transition flex-1">
+                        Close Preview
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 2: Holiday -->
+    <div id="modal2" class="modal" onclick="closeModal(event, 'modal2')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal(event, 'modal2')">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="p-8 md:p-12">
+                <div class="aspect-[4/5] md:aspect-auto md:h-[600px] bg-gradient-to-br from-red-900/50 to-green-900/50 rounded-2xl mb-8">
+                    <div class="preview-placeholder">
+                        <div class="card-icon bg-white/10 backdrop-blur-sm">
+                            <i data-lucide="tree-pine" class="w-10 h-10 text-green-300"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-2 display">Christmas Magic</h3>
+                        <p class="text-gray-300 mb-8">Festive animated holiday greeting card</p>
+                        <div class="bg-white/10 rounded-xl p-6 backdrop-blur-sm w-full max-w-sm">
+                            <p class="text-sm text-gray-300 mb-3 font-medium">Features</p>
+                            <ul class="text-sm text-gray-400 space-y-3 text-left">
+                                <li class="flex items-center gap-3"><i data-lucide="snowflake" class="w-4 h-4 text-green-400 shrink-0"></i>Snow animation effects</li>
+                                <li class="flex items-center gap-3"><i data-lucide="gift" class="w-4 h-4 text-green-400 shrink-0"></i>Holiday-themed design</li>
+                                <li class="flex items-center gap-3"><i data-lucide="package-open" class="w-4 h-4 text-green-400 shrink-0"></i>Gift reveal animation</li>
+                                <li class="flex items-center gap-3"><i data-lucide="bell" class="w-4 h-4 text-green-400 shrink-0"></i>Jingle bells background music</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="https://instagram.com/njmade_official" target="_blank" class="btn-primary px-8 py-4 rounded-full font-semibold text-center flex-1">
+                        Order This Design - $35
+                    </a>
+                    <button onclick="closeModal(event, 'modal2')" class="px-8 py-4 rounded-full font-semibold border border-white/20 hover:bg-white/5 transition flex-1">
+                        Close Preview
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Love -->
+    <div id="modal3" class="modal" onclick="closeModal(event, 'modal3')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal(event, 'modal3')">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="p-8 md:p-12">
+                <div class="aspect-[4/5] md:aspect-auto md:h-[600px] bg-gradient-to-br from-pink-900/50 to-rose-900/50 rounded-2xl mb-8">
+                    <div class="preview-placeholder">
+                        <div class="card-icon bg-white/10 backdrop-blur-sm">
+                            <i data-lucide="heart" class="w-10 h-10 text-pink-300"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-2 display">With Love</h3>
+                        <p class="text-gray-300 mb-8">Romantic Valentine's Day greeting card</p>
+                        <div class="bg-white/10 rounded-xl p-6 backdrop-blur-sm w-full max-w-sm">
+                            <p class="text-sm text-gray-300 mb-3 font-medium">Features</p>
+                            <ul class="text-sm text-gray-400 space-y-3 text-left">
+                                <li class="flex items-center gap-3"><i data-lucide="hearts" class="w-4 h-4 text-pink-400 shrink-0"></i>Floating hearts animation</li>
+                                <li class="flex items-center gap-3"><i data-lucide="flower-2" class="w-4 h-4 text-pink-400 shrink-0"></i>Elegant romantic design</li>
+                                <li class="flex items-center gap-3"><i data-lucide="message-circle" class="w-4 h-4 text-pink-400 shrink-0"></i>Personalized message area</li>
+                                <li class="flex items-center gap-3"><i data-lucide="music-2" class="w-4 h-4 text-pink-400 shrink-0"></i>Romantic background music</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="https://instagram.com/njmade_official" target="_blank" class="btn-primary px-8 py-4 rounded-full font-semibold text-center flex-1">
+                        Order This Design - $35
+                    </a>
+                    <button onclick="closeModal(event, 'modal3')" class="px-8 py-4 rounded-full font-semibold border border-white/20 hover:bg-white/5 transition flex-1">
+                        Close Preview
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 4: Thank You -->
+    <div id="modal4" class="modal" onclick="closeModal(event, 'modal4')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal(event, 'modal4')">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="p-8 md:p-12">
+                <div class="aspect-[4/5] md:aspect-auto md:h-[600px] bg-gradient-to-br from-amber-900/50 to-orange-900/50 rounded-2xl mb-8">
+                    <div class="preview-placeholder">
+                        <div class="card-icon bg-white/10 backdrop-blur-sm">
+                            <i data-lucide="hand-heart" class="w-10 h-10 text-amber-300"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-2 display">Thank You</h3>
+                        <p class="text-gray-300 mb-8">Elegant gratitude greeting card</p>
+                        <div class="bg-white/10 rounded-xl p-6 backdrop-blur-sm w-full max-w-sm">
+                            <p class="text-sm text-gray-300 mb-3 font-medium">Features</p>
+                            <ul class="text-sm text-gray-400 space-y-3 text-left">
+                                <li class="flex items-center gap-3"><i data-lucide="eye" class="w-4 h-4 text-amber-400 shrink-0"></i>Subtle fade animations</li>
+                                <li class="flex items-center gap-3"><i data-lucide="layout" class="w-4 h-4 text-amber-400 shrink-0"></i>Minimalist elegant design</li>
+                                <li class="flex items-center gap-3"><i data-lucide="pen-tool" class="w-4 h-4 text-amber-400 shrink-0"></i>Custom message section</li>
+                                <li class="flex items-center gap-3"><i data-lucide="share-2" class="w-4 h-4 text-amber-400 shrink-0"></i>Easy sharing options</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="https://instagram.com/njmade_official" target="_blank" class="btn-primary px-8 py-4 rounded-full font-semibold text-center flex-1">
+                        Order This Design - $35
+                    </a>
+                    <button onclick="closeModal(event, 'modal4')" class="px-8 py-4 rounded-full font-semibold border border-white/20 hover:bg-white/5 transition flex-1">
+                        Close Preview
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 5: Birthday Party -->
+    <div id="modal5" class="modal" onclick="closeModal(event, 'modal5')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal(event, 'modal5')">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="p-8 md:p-12">
+                <div class="aspect-[4/5] md:aspect-auto md:h-[600px] bg-gradient-to-br from-blue-900/50 to-purple-900/50 rounded-2xl mb-8">
+                    <div class="preview-placeholder">
+                        <div class="card-icon bg-white/10 backdrop-blur-sm">
+                            <i data-lucide="party-popper" class="w-10 h-10 text-blue-300"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-2 display">Party Time</h3>
+                        <p class="text-gray-300 mb-8">Fun and vibrant birthday greeting card</p>
+                        <div class="bg-white/10 rounded-xl p-6 backdrop-blur-sm w-full max-w-sm">
+                            <p class="text-sm text-gray-300 mb-3 font-medium">Features</p>
+                            <ul class="text-sm text-gray-400 space-y-3 text-left">
+                                <li class="flex items-center gap-3"><i data-lucide="stars" class="w-4 h-4 text-blue-400 shrink-0"></i>Confetti burst animations</li>
+                                <li class="flex items-center gap-3"><i data-lucide="rainbow" class="w-4 h-4 text-blue-400 shrink-0"></i>Colorful party theme</li>
+                                <li class="flex items-center gap-3"><i data-lucide="music" class="w-4 h-4 text-blue-400 shrink-0"></i>Upbeat background music</li>
+                                <li class="flex items-center gap-3"><i data-lucide="image" class="w-4 h-4 text-blue-400 shrink-0"></i>Photo upload option</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="https://instagram.com/njmade_official" target="_blank" class="btn-primary px-8 py-4 rounded-full font-semibold text-center flex-1">
+                        Order This Design - $35
+                    </a>
+                    <button onclick="closeModal(event, 'modal5')" class="px-8 py-4 rounded-full font-semibold border border-white/20 hover:bg-white/5 transition flex-1">
+                        Close Preview
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal 6: Custom -->
+    <div id="modal6" class="modal" onclick="closeModal(event, 'modal6')">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal(event, 'modal6')">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="p-8 md:p-12">
+                <div class="aspect-[4/5] md:aspect-auto md:h-[600px] bg-gradient-to-br from-emerald-900/50 to-teal-900/50 rounded-2xl mb-8">
+                    <div class="preview-placeholder">
+                        <div class="card-icon bg-white/10 backdrop-blur-sm">
+                            <i data-lucide="lightbulb" class="w-10 h-10 text-emerald-300"></i>
+                        </div>
+                        <h3 class="text-3xl font-bold mb-2 display">Your Vision</h3>
+                        <p class="text-gray-300 mb-8">100% custom designed greeting card</p>
+                        <div class="bg-white/10 rounded-xl p-6 backdrop-blur-sm w-full max-w-sm">
+                            <p class="text-sm text-gray-300 mb-3 font-medium">Includes</p>
+                            <ul class="text-sm text-gray-400 space-y-3 text-left">
+                                <li class="flex items-center gap-3"><i data-lucide="pencil" class="w-4 h-4 text-emerald-400 shrink-0"></i>Custom concept and design</li>
+                                <li class="flex items-center gap-3"><i data-lucide="brush" class="w-4 h-4 text-emerald-400 shrink-0"></i>Your choice of colors and style</li>
+                                <li class="flex items-center gap-3"><i data-lucide="refresh-cw" class="w-4 h-4 text-emerald-400 shrink-0"></i>Unlimited revisions</li>
+                                <li class="flex items-center gap-3"><i data-lucide="zap" class="w-4 h-4 text-emerald-400 shrink-0"></i>Priority 24h delivery</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="https://instagram.com/njmade_official" target="_blank" class="btn-primary px-8 py-4 rounded-full font-semibold text-center flex-1">
+                        Order Custom Design - $85
+                    </a>
+                    <button onclick="closeModal(event, 'modal6')" class="px-8 py-4 rounded-full font-semibold border border-white/20 hover:bg-white/5 transition flex-1">
+                        Close Preview
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-32 px-6 bg-gradient-to-b from-transparent to-white/5">
+        <div class="max-w-7xl mx-auto">
             <div class="text-center mb-20">
-                <h2 class="text-4xl md:text-5xl font-medium mb-6">The Process</h2>
-                <p class="text-stone-400 max-w-xl mx-auto font-light">A seamless, white-glove experience from concept to delivery.</p>
+                <h2 class="text-4xl md:text-6xl font-bold mb-6 display">How It Works</h2>
+                <p class="text-gray-400 text-xl">Three simple steps to make someone's day</p>
             </div>
 
             <div class="grid md:grid-cols-3 gap-12">
-                <div class="text-center md:text-left">
-                    <div class="w-12 h-12 rounded-full border border-stone-700 flex items-center justify-center mb-6 mx-auto md:mx-0">
-                        <span class="serif text-xl text-stone-300">01</span>
-                    </div>
-                    <h3 class="text-xl font-medium mb-3">Select or Commission</h3>
-                    <p class="text-stone-400 font-light leading-relaxed">Choose a curated template from our portfolio, or provide a mood board for a fully bespoke design tailored to your vision.</p>
+                <div class="text-center group">
+                    <div class="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-4xl font-bold mx-auto mb-6 group-hover:scale-110 transition transform">1</div>
+                    <h3 class="text-2xl font-bold mb-4">Choose a Design</h3>
+                    <p class="text-gray-400 font-light">Browse our collection or request a fully custom design tailored to your vision.</p>
                 </div>
-                <div class="text-center md:text-left">
-                    <div class="w-12 h-12 rounded-full border border-stone-700 flex items-center justify-center mb-6 mx-auto md:mx-0">
-                        <span class="serif text-xl text-stone-300">02</span>
-                    </div>
-                    <h3 class="text-xl font-medium mb-3">Refine the Details</h3>
-                    <p class="text-stone-400 font-light leading-relaxed">Share your event details, guest information, and any specific copy. We handle the typography, layout, and animation sequencing.</p>
+                <div class="text-center group">
+                    <div class="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-4xl font-bold mx-auto mb-6 group-hover:scale-110 transition transform">2</div>
+                    <h3 class="text-2xl font-bold mb-4">Share Details</h3>
+                    <p class="text-gray-400 font-light">Send us names, dates, messages, and any special requests via Instagram DM.</p>
                 </div>
-                <div class="text-center md:text-left">
-                    <div class="w-12 h-12 rounded-full border border-stone-700 flex items-center justify-center mb-6 mx-auto md:mx-0">
-                        <span class="serif text-xl text-stone-300">03</span>
-                    </div>
-                    <h3 class="text-xl font-medium mb-3">Deliver & Deploy</h3>
-                    <p class="text-stone-400 font-light leading-relaxed">Receive a private preview link for approval. Once finalized, we provide the live, mobile-optimized URL ready to be shared.</p>
+                <div class="text-center group">
+                    <div class="w-24 h-24 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-4xl font-bold mx-auto mb-6 group-hover:scale-110 transition transform">3</div>
+                    <h3 class="text-2xl font-bold mb-4">Send and Celebrate</h3>
+                    <p class="text-gray-400 font-light">Receive your animated card within 24-48 hours. Share the link and watch them smile.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Pricing Section -->
-    <section id="pricing" class="py-32 bg-stone-950">
-        <div class="max-w-5xl mx-auto px-6">
+    <!-- Pricing -->
+    <section id="pricing" class="py-32 px-6">
+        <div class="max-w-5xl mx-auto">
             <div class="text-center mb-20">
-                <h2 class="text-4xl md:text-5xl font-medium mb-6">Investment</h2>
-                <p class="text-stone-400 font-light">Transparent pricing for exceptional digital craftsmanship.</p>
+                <h2 class="text-4xl md:text-6xl font-bold mb-6 display">Simple Pricing</h2>
+                <p class="text-gray-400 text-xl">No subscriptions. One-time payment.</p>
             </div>
 
             <div class="grid md:grid-cols-2 gap-8">
-                <!-- Tier 1 -->
-                <div class="bg-stone-900/50 border border-stone-800 p-10 rounded-2xl hover:border-stone-600 transition duration-500">
-                    <h3 class="text-2xl serif mb-2">Curated Template</h3>
-                    <p class="text-stone-400 text-sm mb-8 font-light">Ideal for streamlined, elegant invitations.</p>
-                    <div class="text-4xl font-light mb-8">$35 <span class="text-lg text-stone-500">/ one-time</span></div>
+                <div class="bg-white/5 border border-white/10 rounded-3xl p-10 hover:border-white/30 transition duration-500">
+                    <h3 class="text-2xl font-bold mb-2">Pre-Made Template</h3>
+                    <p class="text-gray-400 mb-8">Quick, beautiful, and ready to personalize</p>
+                    <div class="text-5xl font-bold mb-8">$35</div>
                     <ul class="space-y-4 mb-10">
-                        <li class="flex items-start text-stone-300 font-light">
-                            <i data-lucide="check" class="w-5 h-5 mr-3 text-stone-400 shrink-0 mt-0.5"></i>
-                            Selection from existing premium designs
-                        </li>
-                        <li class="flex items-start text-stone-300 font-light">
-                            <i data-lucide="check" class="w-5 h-5 mr-3 text-stone-400 shrink-0 mt-0.5"></i>
-                            Customization of all text, dates, and locations
-                        </li>
-                        <li class="flex items-start text-stone-300 font-light">
-                            <i data-lucide="check" class="w-5 h-5 mr-3 text-stone-400 shrink-0 mt-0.5"></i>
-                            Subtle, professional scroll animations
-                        </li>
-                        <li class="flex items-start text-stone-300 font-light">
-                            <i data-lucide="check" class="w-5 h-5 mr-3 text-stone-400 shrink-0 mt-0.5"></i>
-                            48-hour turnaround time
-                        </li>
+                        <li class="flex items-center text-gray-300"><i data-lucide="check" class="w-5 h-5 mr-3 text-green-400"></i>Choose from 50+ designs</li>
+                        <li class="flex items-center text-gray-300"><i data-lucide="check" class="w-5 h-5 mr-3 text-green-400"></i>Custom text and colors</li>
+                        <li class="flex items-center text-gray-300"><i data-lucide="check" class="w-5 h-5 mr-3 text-green-400"></i>Smooth animations</li>
+                        <li class="flex items-center text-gray-300"><i data-lucide="check" class="w-5 h-5 mr-3 text-green-400"></i>48-hour delivery</li>
                     </ul>
-                    <!-- REPLACE: Change 'yourhandle' to your actual Instagram username -->
-                    <a href="https://instagram.com/yourhandle" class="block w-full py-4 rounded-full border border-stone-600 text-center font-medium hover:bg-stone-100 hover:text-stone-950 hover:border-stone-100 transition duration-300">Inquire via Instagram</a>
+                    <a href="https://instagram.com/njmade_official" target="_blank" class="block w-full py-4 rounded-full border border-white/20 text-center font-semibold hover:bg-white/5 transition">
+                        Order on Instagram
+                    </a>
                 </div>
 
-                <!-- Tier 2 -->
-                <div class="bg-stone-100 text-stone-950 p-10 rounded-2xl relative">
-                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-stone-800 text-stone-100 px-4 py-1.5 rounded-full text-xs tracking-widest uppercase">
-                        Most Requested
+                <div class="bg-gradient-to-br from-purple-900/30 to-pink-900/30 border border-purple-500/30 rounded-3xl p-10 relative">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-2 rounded-full text-sm font-bold">
+                        Most Popular
                     </div>
-                    <h3 class="text-2xl serif mb-2">Bespoke Design</h3>
-                    <p class="text-stone-600 text-sm mb-8 font-light">A completely unique digital experience built from scratch.</p>
-                    <div class="text-4xl font-light mb-8">$85 <span class="text-lg text-stone-500">/ one-time</span></div>
+                    <h3 class="text-2xl font-bold mb-2">Fully Custom</h3>
+                    <p class="text-gray-400 mb-8">Built from scratch for your unique vision</p>
+                    <div class="text-5xl font-bold mb-8">$85</div>
                     <ul class="space-y-4 mb-10">
-                        <li class="flex items-start text-stone-800 font-light">
-                            <i data-lucide="check" class="w-5 h-5 mr-3 text-stone-950 shrink-0 mt-0.5"></i>
-                            100% custom layout, color palette, and typography
-                        </li>
-                        <li class="flex items-start text-stone-800 font-light">
-                            <i data-lucide="check" class="w-5 h-5 mr-3 text-stone-950 shrink-0 mt-0.5"></i>
-                            Advanced, choreographed animations
-                        </li>
-                        <li class="flex items-start text-stone-800 font-light">
-                            <i data-lucide="check" class="w-5 h-5 mr-3 text-stone-950 shrink-0 mt-0.5"></i>
-                            Integrated RSVP form or external link mapping
-                        </li>
-                        <li class="flex items-start text-stone-800 font-light">
-                            <i data-lucide="check" class="w-5 h-5 mr-3 text-stone-950 shrink-0 mt-0.5"></i>
-                            Two rounds of revisions included
-                        </li>
+                        <li class="flex items-center text-gray-300"><i data-lucide="check" class="w-5 h-5 mr-3 text-purple-400"></i>100% custom design</li>
+                        <li class="flex items-center text-gray-300"><i data-lucide="check" class="w-5 h-5 mr-3 text-purple-400"></i>Advanced animations</li>
+                        <li class="flex items-center text-gray-300"><i data-lucide="check" class="w-5 h-5 mr-3 text-purple-400"></i>Background music</li>
+                        <li class="flex items-center text-gray-300"><i data-lucide="check" class="w-5 h-5 mr-3 text-purple-400"></i>Unlimited revisions</li>
+                        <li class="flex items-center text-gray-300"><i data-lucide="check" class="w-5 h-5 mr-3 text-purple-400"></i>24-hour priority delivery</li>
                     </ul>
-                    <!-- REPLACE: Change 'yourhandle' to your actual Instagram username -->
-                    <a href="https://instagram.com/yourhandle" class="block w-full py-4 rounded-full bg-stone-950 text-stone-100 text-center font-medium hover:bg-stone-800 transition duration-300">Inquire via Instagram</a>
+                    <a href="https://instagram.com/njmade_official" target="_blank" class="block w-full py-4 rounded-full btn-primary text-center font-semibold">
+                        Order on Instagram
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Footer / Final CTA -->
-    <section class="py-32 bg-stone-900/30 border-t border-stone-800/50">
-        <div class="max-w-4xl mx-auto px-6 text-center">
-            <h2 class="text-4xl md:text-6xl serif font-medium mb-8">Ready to set the tone?</h2>
-            <p class="text-xl text-stone-400 mb-12 font-light">Let us craft a digital invitation that your guests will remember.</p>
-            <!-- REPLACE: Change 'yourhandle' to your actual Instagram username -->
-            <a href="https://instagram.com/yourhandle" target="_blank" class="inline-block bg-stone-100 text-stone-950 px-10 py-5 rounded-full text-lg font-medium hover:bg-white transition duration-300">
-                Begin Your Project
+    <!-- Final CTA -->
+    <section class="py-32 px-6">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-5xl md:text-7xl font-bold mb-8 display">Ready to Make Someone Smile?</h2>
+            <p class="text-xl text-gray-400 mb-12">Join hundreds of happy customers who have sent memorable digital greetings</p>
+            <a href="https://instagram.com/njmade_official" target="_blank" class="btn-primary inline-block px-12 py-6 rounded-full text-xl font-semibold">
+                Start Your Order
             </a>
-            <p class="mt-8 text-stone-500 text-sm">Direct inquiries are typically answered within 12 hours.</p>
+            <p class="mt-8 text-gray-500">Average response time: Under 2 hours</p>
         </div>
     </section>
 
-    <footer class="bg-stone-950 border-t border-stone-800/50 py-12">
-        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
-            <div class="text-xl font-semibold tracking-wide serif mb-4 md:mb-0">Nj Made</div>
-            <div class="text-stone-500 text-sm font-light">
-                &copy; 2026 Nj Made. All rights reserved.
-            </div>
+    <!-- Footer -->
+    <footer class="border-t border-white/10 py-12 px-6">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-2xl font-bold display">Nj <span class="gradient-text">Made</span></div>
+            <div class="text-gray-500 text-sm">2026 Nj Made. Crafting digital moments.</div>
+            <a href="https://instagram.com/njmade_official" target="_blank" class="flex items-center gap-2 text-gray-400 hover:text-white transition">
+                <i data-lucide="instagram" class="w-5 h-5"></i>
+                @njmade_official
+            </a>
         </div>
     </footer>
 
     <script>
         lucide.createIcons();
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(event, modalId) {
+            if (event.target.id === modalId || event.target.closest('.modal-close')) {
+                document.getElementById(modalId).classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        const filterButtons = document.querySelectorAll('.category-pill');
+        const cards = document.querySelectorAll('.masonry-item');
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                const filter = button.getAttribute('data-filter');
+                cards.forEach(card => {
+                    if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                        card.style.display = 'block';
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                            card.style.transform = 'scale(1)';
+                        }, 10);
+                    } else {
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.8)';
+                        setTimeout(() => { card.style.display = 'none'; }, 300);
+                    }
+                });
+            });
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal.active').forEach(modal => {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                });
+            }
+        });
     </script>
 </body>
 </html>
